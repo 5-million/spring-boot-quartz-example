@@ -1,10 +1,15 @@
 package com.example.quartz.service;
 
+import com.example.quartz.dto.JobInfo;
 import com.example.quartz.dto.JobRequest;
 import com.example.quartz.dto.RescheduleRequest;
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -54,5 +59,25 @@ public class SchedulerService {
                 .build();
 
         scheduler.rescheduleJob(triggerKey, newTrigger);
+    }
+
+    public List<JobInfo> getSchedule() throws SchedulerException {
+        List<JobInfo> list = new ArrayList<>();
+        for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.anyGroup())) {
+            scheduler.getTriggersOfJob(jobKey).stream().forEach(trigger -> {
+                JobInfo info = new JobInfo();
+
+                info.setGroup(jobKey.getGroup());
+                info.setJobName(jobKey.getName());
+                info.setTriggerName(trigger.getKey().getName());
+
+                if (trigger instanceof CronTrigger)
+                    info.setCron(((CronTrigger) trigger).getCronExpression());
+
+                list.add(info);
+            });
+        }
+
+        return list;
     }
 }

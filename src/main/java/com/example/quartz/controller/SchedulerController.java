@@ -2,6 +2,7 @@ package com.example.quartz.controller;
 
 import com.example.quartz.dto.JobRequest;
 import com.example.quartz.dto.RescheduleRequest;
+import com.example.quartz.dto.ResponseData;
 import com.example.quartz.job.JobWithBean;
 import com.example.quartz.job.SimpleJob;
 import com.example.quartz.service.SchedulerService;
@@ -15,6 +16,11 @@ import org.springframework.web.bind.annotation.*;
 public class SchedulerController {
 
     private final SchedulerService service;
+
+    @GetMapping("/api/v1/schedule")
+    public ResponseData getJobList() throws SchedulerException {
+        return new ResponseData(service.getSchedule());
+    }
 
     @PostMapping("/api/v1/schedule/simple")
     @ResponseStatus(HttpStatus.CREATED)
