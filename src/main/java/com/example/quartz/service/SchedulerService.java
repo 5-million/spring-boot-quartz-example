@@ -3,6 +3,7 @@ package com.example.quartz.service;
 import com.example.quartz.dto.JobInfo;
 import com.example.quartz.dto.JobRequest;
 import com.example.quartz.dto.RescheduleRequest;
+import com.example.quartz.dto.SimpleData;
 import lombok.RequiredArgsConstructor;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
@@ -36,6 +37,7 @@ public class SchedulerService {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put("jobName", jobName);
         jobDataMap.put("group", group);
+        jobDataMap.put("data", new SimpleData("aa", "bb"));
         return jobDataMap;
     }
 
@@ -64,8 +66,12 @@ public class SchedulerService {
     public List<JobInfo> getSchedule() throws SchedulerException {
         List<JobInfo> list = new ArrayList<>();
         for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.anyGroup())) {
+            JobDetail jobDetail = scheduler.getJobDetail(jobKey);
             scheduler.getTriggersOfJob(jobKey).stream().forEach(trigger -> {
                 JobInfo info = new JobInfo();
+                
+                // jobDataMap에 저장한 데이터 조회
+                info.setData((SimpleData) jobDetail.getJobDataMap().get("data"));
 
                 info.setGroup(jobKey.getGroup());
                 info.setJobName(jobKey.getName());

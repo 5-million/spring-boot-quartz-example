@@ -1,6 +1,5 @@
 package com.example.quartz.dto;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,4 +11,5 @@ public class JobInfo {
     private String triggerName;
     private String group;
     private String cron;
+    private SimpleData data;
 }
